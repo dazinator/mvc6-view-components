@@ -1,5 +1,9 @@
 ### ASP.NET MVC6 and View Components in a separate assembly
 
+##THIS BRANCH
+Demonstrates an issue with VC's when there is no project / assembly reference to the VC component - and the assembly is discovered  loaded at runtime.
+
+## MASTER
 Demonstrates how you can:
 * Use MVC6 with View Components defined in a separate assembly.
 * Use MVC6 with Controllers and Views defined in a separate assembly
