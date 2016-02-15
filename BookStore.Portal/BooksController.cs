@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNet.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BookStore.Portal.ViewModel;
 
 namespace BookStore.Portal
 {
@@ -10,7 +7,8 @@ namespace BookStore.Portal
     {
         public IActionResult Index()
         {
-            return View();
+            var model = new BookModel() { Name = "MyBook" };
+            return View(model);
         }
     }
 }
