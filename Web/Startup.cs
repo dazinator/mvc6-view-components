@@ -9,12 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.FileProviders;
 using System.Reflection;
+using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace Web
 {
     public class Startup
     {
+
+        public static Assembly[] AdditionalAssemblies;
 
         private string _basePath;
 
@@ -27,27 +30,32 @@ namespace Web
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<DefaultAssemblyProvider, DefaultAssemblyProvider>();
+            services.AddTransient<IAssemblyProvider, AssemblyProvider>();
+
+            
 
             // Controller assembly.
             string assemblyFilePath = System.IO.Path.Combine(_basePath, "..\\..\\artifacts\\bin\\BookStore.Portal\\Debug\\net451\\BookStore.Portal.dll");
-            Assembly assembly = Assembly.LoadFile(assemblyFilePath);
+            // Assembly assembly = Assembly.LoadFile(assemblyFilePath);
 
             // VC Assembly.
             string componentAssemblyPath = System.IO.Path.Combine(_basePath, "..\\..\\artifacts\\bin\\BookStore.Components\\Debug\\net451\\BookStore.Components.dll");
-            Assembly componentAssembly = Assembly.LoadFile(componentAssemblyPath);
+            // Assembly componentAssembly = Assembly.LoadFile(componentAssemblyPath);
 
-
-            services.AddMvc().AddControllersAsServices(new[] { assembly, componentAssembly, this.GetType().Assembly });
+            AdditionalAssemblies = new Assembly[] { this.GetType().Assembly, Assembly.LoadFile(assemblyFilePath), Assembly.LoadFile(componentAssemblyPath) };
+            
+            services.AddMvc().AddControllersAsServices(AdditionalAssemblies);
 
             services.Configure<RazorViewEngineOptions>(options =>
                 {
                     options.FileProvider = new CompositeFileProvider(
                         new EmbeddedFileProvider(
-                            assembly,
+                            AdditionalAssemblies[1],
                             "BookStore.Portal"
                         ),
                         new EmbeddedFileProvider(
-                            componentAssembly,
+                            AdditionalAssemblies[2],
                             "BookStore.Components"
                         ),
                         options.FileProvider
